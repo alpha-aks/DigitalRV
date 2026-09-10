@@ -1,32 +1,32 @@
 [
     {
-        "title": "Starter",
-        "description": "Best option for personal use & for your next project",
-        "price": 29,
-        "devCount": "1 developer",
-        "support": "6 months",
-        "update": "6 months",
-        "action": "Get Started",
-        "link": "/"
+        "title": "Starter SMS",
+        "description": "Perfect for growing brands launching high-converting SMS campaigns",
+        "price": 49,
+        "devCount": "5,000 SMS / month",
+        "support": "Live Chat Support",
+        "update": "99.8% Delivery Rate",
+        "action": "Start Free Trial",
+        "link": "/#contact"
     },
     {
-        "title": "Company",
-        "description": "Relevant for multiple users, extended & premium support",
-        "price": 99,
-        "devCount": "10 developers",
-        "support": "24 months",
-        "update": "24 months",
-        "action": "Get Started",
-        "link": "/"
+        "title": "Growth SMS",
+        "description": "For scaling businesses demanding 2-way messaging & automated flows",
+        "price": 149,
+        "devCount": "25,000 SMS / month",
+        "support": "Dedicated Strategist",
+        "update": "Custom Sender ID",
+        "action": "Scale Your SMS",
+        "link": "/#contact"
     },
     {
-        "title": "Enterprise",
-        "description": "Best for large scale uses and extended redistribution rights",
+        "title": "Enterprise SMS",
+        "description": "High-volume infrastructure with dedicated shortcodes & custom API integration",
         "price": 499,
-        "devCount": "100+ developers",
-        "support": "36 months",
-        "update": "36 months",
-        "action": "Get Started",
-        "link": "/"
+        "devCount": "100,000+ SMS / month",
+        "support": "24/7 Priority Support",
+        "update": "Dedicated Shortcode",
+        "action": "Contact Sales",
+        "link": "/#contact"
     }
 ]

@@ -1,7 +1,9 @@
 {
-  "name": "init-template",
+  "name": "digitalrv",
   "type": "module",
   "version": "0.0.1",
+  "license": "MIT",
+  "author": "Digital RV <contact@digital-rv.tech>",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

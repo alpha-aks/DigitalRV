@@ -29,7 +29,8 @@
   }
 
   :root {
-    --green: #b9ff66;
+    --green: #FF7A00;
+    --orange: #FF7A00;
     --black: rgb(0, 0, 0);
     --dark: #191a23;
     --gray: #f3f3f3;
