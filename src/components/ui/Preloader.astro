@@ -1,0 +1,505 @@
+---
+// Dot Matrix Fullscreen Funky Preloader in SMS Format for Digital RV
+// Fully Responsive & Optimized for Phone (Portrait) and Desktop (Landscape)
+---
+
+<div id="digitalrv-preloader" class="fixed inset-0 h-[100dvh] w-screen z-[99999] flex flex-col items-center justify-between bg-[#07070b] text-[#FF7A00] select-none overflow-hidden transition-all duration-700 ease-out pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] px-3 sm:px-6 touch-none overscroll-none">
+  <!-- Scanline & Phosphor CRT Overlay -->
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,122,0,0.15)_0%,rgba(7,7,11,0.98)_85%)] z-10"></div>
+  <div class="pointer-events-none absolute inset-0 z-10 opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px]"></div>
+
+  <!-- Top Phone Status Bar / HUD -->
+  <div class="relative z-20 w-full max-w-5xl flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-wider opacity-90 border-b border-[#FF7A00]/25 pb-2">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <span class="inline-flex items-center gap-1.5 text-[#FF7A00]">
+        <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 2.98.97 4.29L1 23l6.71-1.97C9.02 21.64 10.46 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.4 0-2.73-.35-3.89-.96l-.28-.15-4.11 1.21 1.21-4.11-.15-.28C4.35 14.73 4 13.4 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z"/></svg>
+        <span class="font-bold text-white tracking-widest text-[10px] sm:text-xs">SMS INBOX</span>
+      </span>
+      <span class="text-gray-600">|</span>
+      <span class="text-white font-semibold text-[10px] sm:text-xs truncate max-w-[120px] sm:max-w-none">FROM: <span class="text-[#FF7A00]">DIGITAL RV</span></span>
+      <span class="hidden md:inline-block text-[10px] text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/30">VERIFIED 10DLC</span>
+    </div>
+    
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <span class="hidden sm:inline-block text-[11px] text-gray-400">98% OPEN RATE</span>
+      <button id="preloader-skip-btn" class="px-2.5 sm:px-3 py-1 border border-[#FF7A00]/60 rounded-lg text-[10px] sm:text-xs font-mono font-bold tracking-wider text-[#FF7A00] hover:bg-[#FF7A00] hover:text-black active:scale-95 transition-all cursor-pointer shadow-[0_0_15px_rgba(255,122,0,0.25)] min-h-[32px] sm:min-h-[36px] flex items-center">
+        SKIP <span class="hidden sm:inline">&nbsp;[ESC]</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Dot Matrix Canvas (36x48 aspect-[3/4] on phone portrait, 64x40 aspect-[16/10] on desktop) -->
+  <div class="relative z-20 w-full max-w-5xl flex-grow flex items-center justify-center my-auto py-1 px-1">
+    <canvas 
+      id="dotmatrix-canvas" 
+      class="w-auto h-auto max-h-[62dvh] sm:max-h-[72vh] max-w-[94vw] sm:max-w-full aspect-[3/4] sm:aspect-[16/10] block rounded-2xl shadow-[0_0_50px_rgba(255,122,0,0.18)] cursor-pointer touch-none"
+      title="Tap to skip"
+    ></canvas>
+  </div>
+
+  <!-- Bottom HUD Status & Progress Meter -->
+  <div class="relative z-20 w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 font-mono text-[11px] sm:text-xs border-t border-[#FF7A00]/25 pt-2">
+    <div class="flex items-center justify-between w-full sm:w-auto gap-2">
+      <div class="flex items-center gap-1.5 sm:gap-2 truncate">
+        <span class="w-2 h-2 rounded-full bg-[#FF7A00] animate-ping shrink-0"></span>
+        <span class="text-gray-300 font-medium tracking-wide truncate text-[10px] sm:text-xs" id="preloader-status-text">RECEIVING NEW SMS...</span>
+        <span class="w-1.5 h-3 bg-[#FF7A00] inline-block animate-pulse shrink-0"></span>
+      </div>
+      <span class="sm:hidden text-[10px] text-gray-400 font-mono tracking-tight shrink-0">[TAP TO SKIP]</span>
+    </div>
+
+    <!-- Live Percentage & Progress Meter -->
+    <div class="flex items-center gap-2.5 w-full sm:w-80">
+      <div class="w-full bg-[#161620] h-2 sm:h-2.5 rounded-full overflow-hidden p-0.5 border border-[#FF7A00]/30">
+        <div id="preloader-progress-bar" class="bg-gradient-to-r from-[#FF7A00] via-[#FFA040] to-white h-full rounded-full w-0 transition-all duration-75 shadow-[0_0_15px_#FF7A00]"></div>
+      </div>
+      <span id="preloader-percent" class="text-[#FF7A00] font-black text-xs sm:text-sm min-w-[2.8rem] text-right">0%</span>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const preloader = document.getElementById('digitalrv-preloader');
+    const canvas = document.getElementById('dotmatrix-canvas');
+    const skipBtn = document.getElementById('preloader-skip-btn');
+    const progressBar = document.getElementById('preloader-progress-bar');
+    const percentText = document.getElementById('preloader-percent');
+    const statusText = document.getElementById('preloader-status-text');
+
+    if (!preloader || !canvas) return;
+
+    document.documentElement.classList.add('overflow-hidden');
+    document.body.classList.add('overflow-hidden');
+
+    const ctx = canvas.getContext('2d');
+
+    // Dynamic grid dimensions depending on device orientation
+    let isMobile = false;
+    let COLS = 64;
+    let ROWS = 40;
+    let grid = [];
+    let targetGrid = [];
+
+    function updateLayoutGrid() {
+      const rect = canvas.getBoundingClientRect();
+      const w = window.innerWidth;
+
+      // Phone portrait check
+      isMobile = w < 640 || rect.height > rect.width * 1.05;
+
+      if (isMobile) {
+        // High density vertical matrix for phones: big, bold LED dots!
+        COLS = 36;
+        ROWS = 48;
+      } else {
+        // Wide horizontal matrix for desktop/tablet
+        COLS = 64;
+        ROWS = 40;
+      }
+
+      grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      targetGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+
+      // Limit DPR to max 2 on mobile to ensure silky 60fps
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+    }
+
+    updateLayoutGrid();
+    window.addEventListener('resize', updateLayoutGrid);
+
+    // Standard 5x7 Dot Matrix Font for "DIG"
+    const GLYPH_DIG = {
+      D: [
+        [1, 1, 1, 1, 0],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 1, 1, 1, 0]
+      ],
+      I: [
+        [1, 1, 1, 1, 1],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [1, 1, 1, 1, 1]
+      ],
+      G: [
+        [0, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0],
+        [1, 0, 1, 1, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 0, 0, 1],
+        [0, 1, 1, 1, 1]
+      ]
+    };
+
+    // Generates the TAAAAAAALLLLLL R and V dot-matrices
+    function generateToweringRV(tallRows, isMobileMode) {
+      const maxLimit = isMobileMode ? 25 : 22;
+      const rows = Math.max(7, Math.min(maxLimit, Math.round(tallRows)));
+      const rGrid = [];
+      const vGrid = [];
+
+      const loopRows = Math.max(4, Math.round(rows * 0.35));
+      const waistRow = loopRows;
+
+      for (let r = 0; r < rows; r++) {
+        // --- 'R' (width 7, double-thick spine) ---
+        const rRow = [0, 0, 0, 0, 0, 0, 0];
+        rRow[0] = 1;
+        rRow[1] = 1; // Left pillar
+
+        if (r === 0 || r === waistRow) {
+          rRow[2] = 1; rRow[3] = 1; rRow[4] = 1; rRow[5] = 1;
+        } else if (r < waistRow) {
+          rRow[5] = 1; rRow[6] = 1;
+        } else {
+          // Elongated descending leg
+          const legT = (r - waistRow) / Math.max(1, rows - 1 - waistRow);
+          const colPos = Math.min(6, Math.floor(2 + legT * 4));
+          rRow[colPos] = 1;
+          if (colPos + 1 < 7) rRow[colPos + 1] = 1;
+        }
+        rGrid.push(rRow);
+
+        // --- 'V' (width 9, towering chevron) ---
+        const vRow = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const vT = r / Math.max(1, rows - 1);
+        const leftCol = Math.min(4, Math.floor(vT * 4));
+        const rightCol = 8 - leftCol;
+
+        vRow[leftCol] = 1;
+        if (leftCol + 1 < rightCol) vRow[leftCol + 1] = 1;
+        vRow[rightCol] = 1;
+        if (rightCol - 1 > leftCol) vRow[rightCol - 1] = 1;
+
+        vGrid.push(vRow);
+      }
+
+      return { R: rGrid, V: vGrid, rows: rows };
+    }
+
+    function stamp(matrix, startCol, startRow) {
+      const h = matrix.length;
+      const w = matrix[0].length;
+      for (let r = 0; r < h; r++) {
+        for (let c = 0; c < w; c++) {
+          const gr = startRow + r;
+          const gc = startCol + c;
+          if (gr >= 0 && gr < ROWS && gc >= 0 && gc < COLS) {
+            if (matrix[r][c] === 1) {
+              targetGrid[gr][gc] = 1;
+            }
+          }
+        }
+      }
+    }
+
+    // Draws an SMS Speech Bubble Outline with curved corners & bottom tail
+    function drawSmsBubble(minC, maxC, minR, maxR, hasTail) {
+      for (let c = minC + 2; c <= maxC - 2; c++) {
+        if (minR < ROWS && c < COLS) targetGrid[minR][c] = 1; // Top border
+        if (maxR < ROWS && c < COLS) targetGrid[maxR][c] = 1; // Bottom border
+      }
+      for (let r = minR + 2; r <= maxR - 2; r++) {
+        if (r < ROWS && minC < COLS) targetGrid[r][minC] = 1; // Left border
+        if (r < ROWS && maxC < COLS) targetGrid[r][maxC] = 1; // Right border
+      }
+      // Rounded corners
+      if (minR + 1 < ROWS && minC + 1 < COLS) targetGrid[minR + 1][minC + 1] = 1;
+      if (minR + 1 < ROWS && maxC - 1 < COLS) targetGrid[minR + 1][maxC - 1] = 1;
+      if (maxR - 1 < ROWS && minC + 1 < COLS) targetGrid[maxR - 1][minC + 1] = 1;
+      if (maxR - 1 < ROWS && maxC - 1 < COLS) targetGrid[maxR - 1][maxC - 1] = 1;
+
+      // SMS Bubble speech tail on bottom-left
+      if (hasTail && maxR + 2 < ROWS) {
+        targetGrid[maxR][minC + 3] = 0;
+        targetGrid[maxR + 1][minC + 2] = 1;
+        targetGrid[maxR + 2][minC + 1] = 1;
+        targetGrid[maxR + 2][minC] = 1;
+      }
+    }
+
+    let startTime = performance.now();
+    let animFrameId;
+    let dismissed = false;
+    let hasVibrated = false;
+
+    function dismissPreloader() {
+      if (dismissed) return;
+      dismissed = true;
+      cancelAnimationFrame(animFrameId);
+
+      preloader.style.opacity = '0';
+      preloader.style.transform = 'scale(1.02) translateY(-10px)';
+      preloader.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        preloader.remove();
+        document.documentElement.classList.remove('overflow-hidden');
+        document.body.classList.remove('overflow-hidden');
+      }, 650);
+    }
+
+    if (skipBtn) skipBtn.addEventListener('click', dismissPreloader);
+    canvas.addEventListener('click', dismissPreloader);
+    canvas.addEventListener('touchstart', dismissPreloader, { passive: true });
+    preloader.addEventListener('click', () => {
+      // Tap anywhere outside controls dismisses
+      dismissPreloader();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === ' ') {
+        dismissPreloader();
+      }
+    });
+
+    const statusUpdates = [
+      { at: 0.05, text: "💬 INCOMING SMS: DIGITAL RV..." },
+      { at: 0.22, text: "PARSING SMS PAYLOAD [D•I•G]..." },
+      { at: 0.45, text: "EXPANDING TAAAAAALLLLL RV..." },
+      { at: 0.72, text: "DELIVERED • 98% OPEN RATE..." },
+      { at: 0.90, text: "OPENING DIGITAL RV..." },
+    ];
+
+    function draw(currentTime) {
+      const elapsed = currentTime - startTime;
+      const totalDuration = 2700; // 2.7s
+      const progress = Math.min(1, elapsed / totalDuration);
+
+      // HUD meter
+      const pct = Math.floor(progress * 100);
+      if (progressBar) progressBar.style.width = `${pct}%`;
+      if (percentText) percentText.textContent = `${pct}%`;
+
+      const currentStatus = statusUpdates.slice().reverse().find(s => progress >= s.at);
+      if (currentStatus && statusText) {
+        statusText.textContent = currentStatus.text;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Reset matrix target
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          targetGrid[r][c] = 0;
+        }
+      }
+
+      // -------------------------------------------------------------
+      // ADAPTIVE RENDERING: PHONE PORTRAIT vs DESKTOP LANDSCAPE
+      // -------------------------------------------------------------
+      if (isMobile) {
+        // ================= MOBILE PHONE (PORTRAIT 36x48) =================
+        // 1. Phone Status Bar (Row 1..2)
+        // Signal bars (cols 2..5)
+        targetGrid[2][2] = 1;
+        targetGrid[2][3] = 1; targetGrid[1][3] = 1;
+        targetGrid[2][4] = 1; targetGrid[1][4] = 1; targetGrid[0][4] = 1;
+        // 5G (cols 7..9)
+        targetGrid[1][7] = 1; targetGrid[2][7] = 1;
+        targetGrid[1][8] = 1; targetGrid[2][8] = 1;
+        // Battery (cols 30..33)
+        targetGrid[1][30] = 1; targetGrid[1][31] = 1; targetGrid[1][32] = 1; targetGrid[1][33] = 1;
+        targetGrid[2][30] = 1; targetGrid[2][33] = 1; targetGrid[2][34] = 1;
+        targetGrid[2][31] = 1; targetGrid[2][32] = 1;
+
+        // 2. SMS Bubble Animation (Portrait)
+        if (progress < 0.25) {
+          // Bouncing typing bubble [ • • • ]
+          drawSmsBubble(6, 28, 8, 15, true);
+          const bounce1 = Math.sin(elapsed * 0.012) > 0 ? 11 : 12;
+          const bounce2 = Math.sin(elapsed * 0.012 - 1) > 0 ? 11 : 12;
+          const bounce3 = Math.sin(elapsed * 0.012 - 2) > 0 ? 11 : 12;
+          targetGrid[bounce1][11] = 1; targetGrid[bounce1][12] = 1;
+          targetGrid[bounce2][16] = 1; targetGrid[bounce2][17] = 1;
+          targetGrid[bounce3][21] = 1; targetGrid[bounce3][22] = 1;
+        } else {
+          // Full Mobile SMS Bubble (Cols 2..33, Rows 4..44)
+          drawSmsBubble(2, 33, 4, 44, true);
+
+          // Header line inside bubble (Row 7)
+          for (let c = 4; c <= 31; c++) targetGrid[7][c] = 1;
+
+          // "DIG" Centered on Phone (Row 10):
+          // D (cols 7..11), I (cols 15..19), G (cols 23..27)
+          if (progress > 0.28) stamp(GLYPH_DIG.D, 7, 10);
+          if (progress > 0.35) stamp(GLYPH_DIG.I, 15, 10);
+          if (progress > 0.42) stamp(GLYPH_DIG.G, 23, 10);
+
+          // Divider beam under DIG (Row 18)
+          if (progress > 0.44) {
+            for (let c = 5; c <= 30; c++) targetGrid[18][c] = 1;
+          }
+
+          // "TAAAAAAALLLLLL RV" Centered on Phone (Rows 20 onwards)
+          // Stretches massively down to 23 rows tall!
+          if (progress > 0.44) {
+            if (!hasVibrated) {
+              hasVibrated = true;
+              if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(30); } catch (e) {}
+              }
+            }
+            const stretchT = Math.min(1, (progress - 0.44) / 0.42);
+            const spring = stretchT === 1
+              ? 1
+              : 1 - Math.pow(2, -9 * stretchT) * Math.cos((stretchT * 9 - 0.7) * ((2 * Math.PI) / 3));
+
+            const currentTallRows = 8 + spring * 14; // up to 22-23 rows!
+            const towering = generateToweringRV(currentTallRows, true);
+
+            // Stamp R (cols 8..14) and V (cols 18..26) starting at Row 20
+            stamp(towering.R, 8, 20);
+            stamp(towering.V, 18, 20);
+          }
+
+          // SMS Delivery Checkmark ✓✓ on Phone (Row 42)
+          if (progress > 0.70) {
+            targetGrid[42][26] = 1; targetGrid[41][27] = 1; targetGrid[40][28] = 1;
+            targetGrid[42][29] = 1; targetGrid[41][30] = 1; targetGrid[40][31] = 1;
+            // Time dots
+            targetGrid[42][5] = 1; targetGrid[42][7] = 1; targetGrid[42][9] = 1;
+          }
+        }
+      } else {
+        // ================= DESKTOP LANDSCAPE (64x40) =================
+        // Phone Status Bar
+        targetGrid[3][4] = 1; targetGrid[3][5] = 1; targetGrid[2][5] = 1;
+        targetGrid[3][6] = 1; targetGrid[2][6] = 1; targetGrid[1][6] = 1;
+        targetGrid[3][7] = 1; targetGrid[2][7] = 1; targetGrid[1][7] = 1; targetGrid[0][7] = 1;
+        targetGrid[2][10] = 1; targetGrid[3][10] = 1; targetGrid[2][11] = 1; targetGrid[3][11] = 1;
+        targetGrid[1][57] = 1; targetGrid[1][58] = 1; targetGrid[1][59] = 1; targetGrid[1][60] = 1;
+        targetGrid[3][57] = 1; targetGrid[3][58] = 1; targetGrid[3][59] = 1; targetGrid[3][60] = 1;
+        targetGrid[2][57] = 1; targetGrid[2][60] = 1; targetGrid[2][61] = 1;
+        targetGrid[2][58] = 1; targetGrid[2][59] = 1;
+
+        if (progress < 0.25) {
+          drawSmsBubble(12, 32, 7, 13, true);
+          const bounce1 = Math.sin(elapsed * 0.012) > 0 ? 9 : 10;
+          const bounce2 = Math.sin(elapsed * 0.012 - 1) > 0 ? 9 : 10;
+          const bounce3 = Math.sin(elapsed * 0.012 - 2) > 0 ? 9 : 10;
+          targetGrid[bounce1][17] = 1; targetGrid[bounce1][18] = 1;
+          targetGrid[bounce2][22] = 1; targetGrid[bounce2][23] = 1;
+          targetGrid[bounce3][27] = 1; targetGrid[bounce3][28] = 1;
+        } else {
+          drawSmsBubble(6, 58, 5, 35, true);
+          for (let c = 8; c <= 56; c++) targetGrid[8][c] = 1;
+
+          if (progress > 0.28) stamp(GLYPH_DIG.D, 12, 11);
+          if (progress > 0.35) stamp(GLYPH_DIG.I, 19, 11);
+          if (progress > 0.42) stamp(GLYPH_DIG.G, 26, 11);
+
+          if (progress > 0.45) {
+            for (let c = 11; c <= 32; c++) targetGrid[19][c] = 1;
+          }
+
+          if (progress > 0.45) {
+            const stretchT = Math.min(1, (progress - 0.45) / 0.42);
+            const spring = stretchT === 1
+              ? 1
+              : 1 - Math.pow(2, -9 * stretchT) * Math.cos((stretchT * 9 - 0.7) * ((2 * Math.PI) / 3));
+
+            const currentTallRows = 7 + spring * 14; 
+            const towering = generateToweringRV(currentTallRows, false);
+
+            stamp(towering.R, 38, 11);
+            stamp(towering.V, 47, 11);
+          }
+
+          if (progress > 0.70) {
+            targetGrid[33][50] = 1; targetGrid[32][51] = 1; targetGrid[31][52] = 1;
+            targetGrid[33][53] = 1; targetGrid[32][54] = 1; targetGrid[31][55] = 1;
+            targetGrid[33][10] = 1; targetGrid[33][12] = 1; targetGrid[33][14] = 1;
+          }
+        }
+      }
+
+      // Radar scanline wave
+      const radarRow = (elapsed * 0.045) % ROWS;
+
+      // Shockwave ring when SMS arrives
+      let shockwaveRadius = 0;
+      if (progress > 0.82) {
+        shockwaveRadius = (progress - 0.82) * 110;
+      }
+
+      // Render LED Dots
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const cellW = canvas.width / COLS;
+      const cellH = canvas.height / ROWS;
+      const dotRadius = Math.min(cellW, cellH) * 0.38;
+
+      const centerGridX = Math.floor(COLS / 2);
+      const centerGridY = Math.floor(ROWS / 2);
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const isTargetActive = targetGrid[r][c] === 1;
+
+          if (isTargetActive) {
+            grid[r][c] = Math.min(1, grid[r][c] + 0.32);
+          } else {
+            grid[r][c] = Math.max(0, grid[r][c] - 0.085);
+          }
+
+          const centerX = (c + 0.5) * cellW;
+          const centerY = (r + 0.5) * cellH;
+
+          // Scanline phosphor glow
+          const distToRadar = Math.abs(r - radarRow);
+          const radarGlow = Math.max(0, 1 - distToRadar / 3) * 0.15;
+
+          // Shockwave ripple
+          const distToCenter = Math.hypot(c - centerGridX, r - centerGridY);
+          const distToShockwave = Math.abs(distToCenter - shockwaveRadius);
+          const waveGlow = shockwaveRadius > 0 && distToShockwave < 3 ? (1 - distToShockwave / 3) * 0.45 : 0;
+
+          const activeVal = grid[r][c];
+
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, dotRadius, 0, Math.PI * 2);
+
+          if (activeVal > 0.05) {
+            // Intense Neon Orange LED Dot with hot white/gold center
+            ctx.shadowColor = '#FF7A00';
+            ctx.shadowBlur = isMobile ? Math.round(5 * activeVal) : (14 * activeVal + 5) * dpr;
+
+            const grad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, dotRadius);
+            grad.addColorStop(0, `rgba(255, 255, 255, ${activeVal})`);
+            grad.addColorStop(0.3, `rgba(255, 215, 100, ${activeVal})`);
+            grad.addColorStop(0.75, `rgba(255, 122, 0, ${activeVal * 0.98})`);
+            grad.addColorStop(1, `rgba(190, 50, 0, ${activeVal * 0.55})`);
+
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          } else {
+            // Dim Grid Background Dot
+            const baseAlpha = 0.055 + radarGlow + waveGlow;
+            ctx.fillStyle = `rgba(255, 122, 0, ${baseAlpha})`;
+            ctx.fill();
+          }
+        }
+      }
+
+      if (progress >= 1) {
+        setTimeout(dismissPreloader, 320);
+        return;
+      }
+
+      animFrameId = requestAnimationFrame(draw);
+    }
+
+    animFrameId = requestAnimationFrame(draw);
+  })();
+</script>
