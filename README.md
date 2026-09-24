@@ -1,8 +1,8 @@
-# Digital RV - High-Impact SMS Marketing Agency
+# nx-us and co - High-Impact SMS Marketing Agency
 
-Introducing Digital RV - a high-converting landing page and website designed for our premier SMS marketing agency.
+Introducing nx-us and co - a high-converting landing page and website designed for our premier SMS marketing agency.
 
-Built with clean, modern aesthetics and leveraging the power of Astro and Tailwind CSS with vibrant orange styling, Digital RV showcases our SMS marketing solutions, automated workflows, and customer success stories.
+Built with clean, modern aesthetics and leveraging the power of Astro and Tailwind CSS with vibrant orange styling, nx-us and co showcases our SMS marketing solutions, automated workflows, and customer success stories.
 
 - Clean and modern design.
 - SEO-friendly.

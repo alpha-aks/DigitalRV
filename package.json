@@ -1,9 +1,9 @@
 {
-  "name": "digitalrv",
+  "name": "nx-us-and-co",
   "type": "module",
   "version": "0.0.1",
   "license": "MIT",
-  "author": "Digital RV <contact@digital-rv.tech>",
+  "author": "nx-us and co <contact@nx-us-and-co.com>",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
