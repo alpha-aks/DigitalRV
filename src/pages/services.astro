@@ -1,9 +1,7 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import SectionTitle from "../components/ui/SectionTitle.astro";
 import Card from "../components/ui/Card.astro";
 import ServiceCard from "../components/ui/ServiceCard.astro";
-import { Image } from "astro:assets";
 
 import c1 from "../assets/pics/card-pic1.png";
 import c2 from "../assets/pics/card-pic2.png";
@@ -96,7 +94,7 @@ const services = [
     </div>
     
     <div class="space-y-24">
-      {services.map((service, index) => (
+      {services.map((service) => (
         <div class="service-item">
           <div class="mb-12">
             <ServiceCard
