@@ -84,14 +84,14 @@ const services = [
 ---
 
 <MainLayout 
-  title="Our Services | nx-us and co" 
-  description="Explore our specialized SMS marketing services, automated sequences, 2-way messaging, list growth, and ROI analytics from nx-us and co."
+  title="Our Services | Nexus" 
+  description="Explore our specialized SMS marketing services, automated sequences, 2-way messaging, list growth, and ROI analytics from Nexus."
 >
   <div class="py-16 px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6">
     <div class="text-center mb-16">
       <h1 class="mb-4 text-5xl font-medium leading-none tracking-tight md:text-6xl">Our Services</h1>
       <p class="text-xl font-normal leading-7 mx-auto max-w-3xl">
-        At nx-us and co, we offer a comprehensive range of high-impact SMS marketing and automation services designed to turn customer mobile screens into your primary revenue driver.
+        At Nexus, we offer a comprehensive range of high-impact SMS marketing and automation services designed to turn customer mobile screens into your primary revenue driver.
       </p>
     </div>
     
@@ -113,7 +113,7 @@ const services = [
             <div>
               <h3 class="text-2xl font-medium mb-4">What we offer</h3>
               <p class="mb-6">{service.description}</p>
-              <a href={service.link} class="inline-flex items-center px-8 py-4 bg-green text-dark rounded-2xl hover:bg-dark hover:text-white transition-all font-medium">
+              <a href={service.link} class="inline-flex items-center px-8 py-4 bg-green text-white rounded-2xl hover:bg-dark hover:text-white transition-all font-medium">
                 {service.cta}
                 <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -144,9 +144,9 @@ const services = [
         <div class="p-10 md:p-16">
           <h2 class="text-3xl md:text-4xl font-medium mb-6">Ready to transform your mobile customer engagement?</h2>
           <p class="mb-10 text-xl max-w-2xl mx-auto">
-            Contact nx-us and co today to discuss your SMS marketing strategy and discover how our campaigns can drive exponential revenue for your business.
+            Contact Nexus today to discuss your SMS marketing strategy and discover how our campaigns can drive exponential revenue for your business.
           </p>
-          <a href="/#contact" class="inline-flex items-center px-10 py-5 bg-dark text-white rounded-2xl hover:bg-green hover:text-dark transition-all font-medium text-xl">
+          <a href="/#contact" class="inline-flex items-center px-10 py-5 bg-dark text-white rounded-2xl hover:bg-green hover:text-white transition-all font-medium text-xl">
             Get in touch
           </a>
         </div>
@@ -157,12 +157,22 @@ const services = [
 
 <style>
   .service-item:nth-child(even) {
-    @apply bg-gray bg-opacity-20 py-16 -mx-4 px-4;
+    background-color: #F3F3F3;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 2rem;
   }
   
   @media (min-width: 768px) {
     .service-item:nth-child(even) {
-      @apply -mx-6 px-6;
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
     }
   }
 </style>

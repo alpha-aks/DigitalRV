@@ -1,24 +1,24 @@
 ---
 import { Image } from "astro:assets";
-import linkd from "../../assets/pics/profile-in.svg";
 import Card from "./Card.astro";
 
-const { pic, name, role, description, link } = Astro.props;
+const { pic, name, role, description } = Astro.props;
 ---
 
 <Card isUnderline={true}>
-  <div class="p-[60px]">
-    <div class="flex flex-col sm:flex-row relative">
-      <picture><Image src={pic} alt={name} /></picture>
-      <div class="flex flex-col justify-end sm:ml-5">
-        <h3 class="text-lg font-medium">{name}</h3>
-        <p class="text-sm font-normal">{role}</p>
+  <div class="p-8 sm:p-10 h-full flex flex-col justify-between">
+    <div>
+      <div class="flex flex-col sm:flex-row items-center sm:items-start relative gap-5">
+        <div class="w-24 h-24 sm:w-24 sm:h-24 flex-shrink-0 rounded-2xl overflow-hidden shadow-md border-2 border-green/20">
+          <Image src={pic} alt={name} class="w-full h-full object-cover" />
+        </div>
+        <div class="flex flex-col justify-end text-center sm:text-left mt-2 sm:mt-0">
+          <h3 class="text-xl font-semibold text-black">{name}</h3>
+          <p class="text-sm font-medium text-green">{role}</p>
+        </div>
       </div>
-      <a href={link} class="absolute right-0 top-0"
-        ><Image src={linkd} alt="Linkedin Logo" /></a
-      >
+      <div class="w-full h-[1px] bg-black/10 my-6"></div>
+      <div class="text-gray-700 text-sm leading-relaxed">{description}</div>
     </div>
-    <div class="w-full h-[1px] bg-black my-7"></div>
-    <div>{description}</div>
   </div>
 </Card>

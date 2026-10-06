@@ -1,16 +1,75 @@
 <form
-  class="bg-[#292A32] px-10 py-14 rounded-[14px] gap-5 h-full flex flex-col sm:flex-row items-center justify-center"
+  id="footer-newsletter-form"
+  class="bg-[#292A32] px-6 sm:px-10 py-10 sm:py-14 rounded-[20px] gap-4 h-full flex flex-col sm:flex-row items-center justify-center relative overflow-hidden"
 >
-  <div class="w-full sm:w-[55%]">
+  <div class="w-full sm:w-[60%]">
     <input
-      type="text"
-      id="email"
+      type="email"
+      id="newsletter-email"
       name="email"
-      placeholder="Email"
-      class="bg-transparent w-full px-[35px] py-5 border rounded-[14px] focus:outline-none"
+      required
+      placeholder="Enter your email"
+      class="bg-transparent w-full px-6 py-4 border border-zinc-700 focus:border-white rounded-xl text-white text-sm focus:outline-none transition-colors"
     />
   </div>
-  <button type="submit" name="submit" class="w-full sm:w-[45%] btn-tertiary"
-    >Subscribe to news</button
+  <button
+    type="submit"
+    id="newsletter-submit-btn"
+    class="w-full sm:w-[40%] py-4 px-6 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
   >
+    <span id="newsletter-btn-text">Subscribe to news</span>
+    <span id="newsletter-btn-spinner" class="hidden">⚡</span>
+  </button>
+  <div
+    id="newsletter-status"
+    class="hidden absolute inset-0 bg-[#292A32] flex items-center justify-center px-6 text-center text-sm font-medium text-white transition-opacity"
+  >
+    🎉 Subscribed! "Socha SMS nahi aaya? Hum hai na!"
+  </div>
 </form>
+
+<script>
+  function setupNewsletterForm() {
+    const form = document.getElementById("footer-newsletter-form") as HTMLFormElement;
+    const emailInput = document.getElementById("newsletter-email") as HTMLInputElement;
+    const btnText = document.getElementById("newsletter-btn-text");
+    const statusMsg = document.getElementById("newsletter-status");
+
+    if (!form || !emailInput) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      if (btnText) btnText.textContent = "Joining...";
+
+      try {
+        const response = await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "newsletter",
+            name: email.split("@")[0],
+            email,
+            message: "Subscribed to newsletter updates from website footer.",
+          }),
+        });
+
+        if (statusMsg) {
+          statusMsg.classList.remove("hidden");
+          setTimeout(() => {
+            statusMsg.classList.add("hidden");
+            form.reset();
+            if (btnText) btnText.textContent = "Subscribe to news";
+          }, 4000);
+        }
+      } catch (err) {
+        if (btnText) btnText.textContent = "Subscribe to news";
+      }
+    });
+  }
+
+  setupNewsletterForm();
+  document.addEventListener("astro:after-swap", setupNewsletterForm);
+</script>

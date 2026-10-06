@@ -33,11 +33,11 @@ const jsonLD = jsonLDGenerator({
 });
 // Generate absolute image URL for WhatsApp, Open Graph, and Twitter
 const rawImageSrc = image?.src || siteData.image.src;
-const siteBase = Astro.site || Astro.url.origin || "https://nx-us-and-co.com";
+const siteBase = Astro.site || Astro.url.origin || "https://nexussms.in";
 const ogImageUrl = new URL(rawImageSrc, siteBase).toString();
 const isPng = ogImageUrl.toLowerCase().endsWith(".png");
 const imageMimeType = isPng ? "image/png" : "image/jpeg";
-const imageAlt = image?.alt || siteData.image.alt || "nx-us and co";
+const imageAlt = image?.alt || siteData.image.alt || "Nexus";
 ---
 
 <!-- SEO -->
@@ -66,7 +66,7 @@ const imageAlt = image?.alt || siteData.image.alt || "nx-us and co";
 <meta name="twitter:image:alt" content={imageAlt} />
 
 <!-- Using environment domain -->
-<meta name="twitter:domain" content={import.meta.env.SITE || "nx-us-and-co.com"} />
+<meta name="twitter:domain" content={import.meta.env.SITE || "nexussms.in"} />
 
 {robots && <meta name="robots" content="noindex, nofollow" />}
 

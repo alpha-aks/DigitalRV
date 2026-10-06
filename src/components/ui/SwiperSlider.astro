@@ -32,9 +32,19 @@ const processedTestimonials = Testimonials.map((item, index, array) => ({
               "{item.comment}"
             </p>
           </div>
-          <div class="w-full px-10 sm:px-20 ">
-            <div class="text-green font-medium">{item.name}</div>
-            <div>{item.role}</div>
+          <div class="w-full px-10 sm:px-20 flex items-center gap-4">
+            {item.avatar && (
+              <img
+                src={item.avatar}
+                alt={item.name}
+                class="w-14 h-14 rounded-full object-cover border-2 border-green/60 shadow-md flex-shrink-0"
+                loading="lazy"
+              />
+            )}
+            <div>
+              <div class="text-green font-semibold text-lg">{item.name}</div>
+              <div class="text-gray-300 text-sm font-normal">{item.role}</div>
+            </div>
           </div>
         </div>
       ))

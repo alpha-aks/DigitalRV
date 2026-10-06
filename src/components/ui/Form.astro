@@ -6,7 +6,7 @@ import decorForm from "../../assets/pics/contact-pic.png";
 <div
   class="flex relative justify-start items-center p-[60px] bg-[#F3F3F3] rounded-[45px] overflow-hidden"
 >
-  <form class="bg-gray sm:p-6 h-full w-full lg:max-w-lg">
+  <form id="contact-form" class="bg-gray sm:p-6 h-full w-full lg:max-w-lg">
     <div class="flex flex-col sm:flex-row gap-[35px] sm:items-center mb-10">
       <div class="flex items-center gap-[14px]">
         <input
@@ -15,7 +15,7 @@ import decorForm from "../../assets/pics/contact-pic.png";
           name="checkbox1"
           class="form-checkbox text-black"
         />
-        <label for="checkbox1" class="text-black">Say Hi</label>
+        <label for="checkbox1" class="text-black cursor-pointer">Say Hi</label>
       </div>
       <div class="flex items-center gap-[14px]">
         <input
@@ -24,7 +24,7 @@ import decorForm from "../../assets/pics/contact-pic.png";
           name="checkbox2"
           class="form-checkbox text-black"
         />
-        <label for="checkbox2" class="flex items-center text-black"
+        <label for="checkbox2" class="flex items-center text-black cursor-pointer"
           >Get a Quote</label
         >
       </div>
@@ -36,8 +36,9 @@ import decorForm from "../../assets/pics/contact-pic.png";
         type="text"
         id="name"
         name="name"
+        required
         placeholder="Name"
-        class="w-full px-[30px] py-[18px] border border-black rounded-[14px] text-black outline-none"
+        class="w-full px-[30px] py-[18px] border border-black rounded-[14px] text-black outline-none bg-white"
       />
     </div>
 
@@ -47,8 +48,9 @@ import decorForm from "../../assets/pics/contact-pic.png";
         type="email"
         id="email"
         name="email"
+        required
         placeholder="Email"
-        class="w-full px-[30px] py-[18px] border border-black rounded-[14px] text-black outline-none"
+        class="w-full px-[30px] py-[18px] border border-black rounded-[14px] text-black outline-none bg-white"
       />
     </div>
 
@@ -57,17 +59,23 @@ import decorForm from "../../assets/pics/contact-pic.png";
       <textarea
         id="message"
         name="message"
+        required
         placeholder="Message"
-        class="w-full px-[30px] py-[18px] border border-black rounded-[14px] text-black outline-none"
+        class="w-full px-[30px] py-[18px] border border-black rounded-[14px] text-black outline-none bg-white"
       ></textarea>
     </div>
 
-    <button type="submit" name="submit" class="btn-primary w-full">Send</button>
+    <div id="form-feedback" class="hidden mb-4 p-3 rounded-xl text-sm font-medium"></div>
+
+    <button type="submit" id="submit-btn" name="submit" class="btn-primary w-full cursor-pointer">
+      <span id="submit-btn-text">Send</span>
+    </button>
   </form>
   <picture class="absolute right-[-25%] top-[2%] bottom-[2%] hidden lg:block">
     <Image src={decorForm} alt="decor" />
   </picture>
 </div>
+
 <style>
   .form-checkbox {
     appearance: none;
@@ -98,11 +106,16 @@ import decorForm from "../../assets/pics/contact-pic.png";
     transform: scale(0.6);
   }
 </style>
+
 <script>
   function formSetup() {
-    var cb1 = document.getElementById("checkbox1") as HTMLInputElement;
-    var cb2 = document.getElementById("checkbox2") as HTMLInputElement;
-    var message = document.getElementById("message") as HTMLInputElement;
+    const cb1 = document.getElementById("checkbox1") as HTMLInputElement;
+    const cb2 = document.getElementById("checkbox2") as HTMLInputElement;
+    const message = document.getElementById("message") as HTMLTextAreaElement;
+    const form = document.getElementById("contact-form") as HTMLFormElement;
+    const btn = document.getElementById("submit-btn") as HTMLButtonElement;
+    const btnText = document.getElementById("submit-btn-text");
+    const feedback = document.getElementById("form-feedback");
 
     if (cb1 && cb2) {
       cb1.checked = true;
@@ -110,21 +123,75 @@ import decorForm from "../../assets/pics/contact-pic.png";
       cb2.addEventListener("change", function () {
         if (cb2.checked) {
           cb1.checked = false;
-          message.value =
-            "We're interested in your services! Please contact us";
+          message.value = "We're interested in your services! Please contact us";
         } else {
           message.value = "";
           cb1.checked = true;
         }
       });
+
       cb1.addEventListener("change", function () {
         if (cb1.checked) {
           cb2.checked = false;
           message.value = "";
         } else {
           cb2.checked = true;
-          message.value =
-            "We're interested in your services! Please contact us";
+          message.value = "We're interested in your services! Please contact us";
+        }
+      });
+    }
+
+    if (form) {
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const nameInput = document.getElementById("name") as HTMLInputElement;
+        const emailInput = document.getElementById("email") as HTMLInputElement;
+
+        if (!nameInput?.value || !emailInput?.value || !message?.value) return;
+
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.textContent = "Sending...";
+        if (feedback) {
+          feedback.className = "hidden mb-4 p-3 rounded-xl text-sm font-medium";
+          feedback.textContent = "";
+        }
+
+        const type = cb2?.checked ? "quote" : "contact";
+
+        try {
+          const res = await fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type,
+              name: nameInput.value,
+              email: emailInput.value,
+              message: message.value,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            if (feedback) {
+              feedback.className = "mb-4 p-3 rounded-xl text-sm font-medium bg-green-100 text-green-800 block";
+              feedback.textContent = "Message sent successfully! Please check your inbox for confirmation.";
+            }
+            form.reset();
+            if (cb1) cb1.checked = true;
+            if (cb2) cb2.checked = false;
+          } else {
+            throw new Error(data.message || "Failed to send message");
+          }
+        } catch (err: any) {
+          if (feedback) {
+            feedback.className = "mb-4 p-3 rounded-xl text-sm font-medium bg-red-100 text-red-800 block";
+            feedback.textContent = err.message || "Error sending message. Please email contact@nexussms.in";
+          }
+        } finally {
+          if (btn) btn.disabled = false;
+          if (btnText) btnText.textContent = "Send";
         }
       });
     }

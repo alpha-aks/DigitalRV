@@ -29,8 +29,11 @@
   }
 
   :root {
-    --green: #FF7A00;
-    --orange: #FF7A00;
+    --green: #3134BF;
+    --orange: #3134BF;
+    --blue: #3134BF;
+    --blue-dark: #131B42;
+    --blue-light: #4E54F7;
     --black: rgb(0, 0, 0);
     --dark: #191a23;
     --gray: #f3f3f3;
@@ -105,7 +108,7 @@
       @apply bg-dark text-white rounded-lg px-[35px] py-5 transition-all duration-200;
     }
     .btn-primary:hover {
-      @apply bg-green text-black transform scale-105;
+      @apply bg-green text-white transform scale-105;
     }
 
     .btn-secondary {
@@ -116,14 +119,14 @@
     }
 
     .btn-tertiary {
-      @apply bg-green text-black rounded-lg px-[35px] py-5 transition-all duration-200;
+      @apply bg-green text-white rounded-lg px-[35px] py-5 transition-all duration-200;
     }
     .btn-tertiary:hover {
-      @apply bg-white text-black transform scale-105;
+      @apply bg-dark text-white transform scale-105;
     }
 
     .greenhead {
-      @apply bg-green text-black rounded-[7px] px-[7px];
+      @apply bg-green text-white rounded-[7px] px-[7px];
     }
 
     .whitehead {
@@ -132,6 +135,24 @@
 
     .blackhead {
       @apply bg-black text-white rounded-[7px] px-[7px];
+    }
+
+    .accordion__item.active {
+      background-color: var(--green) !important;
+      color: #ffffff !important;
+    }
+    .accordion__item.active .accordion__toggle {
+      color: #ffffff !important;
+    }
+    .accordion__item.active .accordion__content p {
+      color: #ffffff !important;
+    }
+    .accordion__item.active .accordion__content div {
+      background-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    .accordion__item.active .bg-gray {
+      background-color: #ffffff !important;
+      border-color: #ffffff !important;
     }
   }
 }

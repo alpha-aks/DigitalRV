@@ -4,12 +4,12 @@ import priceData from "../data/priceDats.json";
 import Card from "../components/ui/Card.astro";
 ---
 
-<MainLayout title="Our Pricing | nx-us and co">
+<MainLayout title="Our Pricing | Nexus">
 	<main class="space-y-20">
         <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-3">
             <div class="mx-auto max-w-screen-md text-center mb-8 lg:mb-12">
                 <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900">High-Impact SMS Marketing Plans</h2>
-                <p class="mb-5 font-light text-gray-500 sm:text-xl">Here at nx-us and co, we provide transparent, ROI-driven SMS marketing plans engineered to deliver 98% open rates and maximum conversions.</p>
+                <p class="mb-5 font-light text-gray-500 sm:text-xl">Here at Nexus, we provide transparent, ROI-driven SMS marketing plans engineered to deliver 98% open rates and maximum conversions.</p>
             </div>
             <div class="space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0">
                 <!-- Pricing Card -->
@@ -51,7 +51,7 @@ import Card from "../components/ui/Card.astro";
                             <span>Feature: <span class="font-semibold">{item.update}</span></span>
                         </li>
                     </ul>
-                    <a href={item.link} class="text-black hover:text-white bg-green hover:bg-black focus:ring-4 focus:ring-orange-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">{item.action}</a>
+                    <a href={item.link} class="text-white hover:text-white bg-green hover:bg-dark focus:ring-4 focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">{item.action}</a>
                 </div>
                 </Card>
                 )) 

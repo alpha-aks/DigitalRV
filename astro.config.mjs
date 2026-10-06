@@ -7,7 +7,7 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://nx-us-and-co.com",
+  site: "https://nexussms.in",
   integrations: [tailwind()],
   output: 'server',
   adapter: vercel(),

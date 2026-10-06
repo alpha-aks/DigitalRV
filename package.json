@@ -1,9 +1,9 @@
 {
-  "name": "nx-us-and-co",
+  "name": "nexus",
   "type": "module",
   "version": "0.0.1",
   "license": "MIT",
-  "author": "nx-us and co <contact@nx-us-and-co.com>",
+  "author": "Nexus <contact@nexussms.in>",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -18,6 +18,7 @@
     "astro": "^5.0.9",
     "astro-navbar": "^2.3.7",
     "lenis": "^1.0.45",
+    "resend": "^6.32.1",
     "swiper": "^11.1.3",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5"

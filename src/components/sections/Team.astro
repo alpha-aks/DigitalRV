@@ -4,64 +4,34 @@ import TeamCard from "../ui/TeamCard.astro";
 import Section from "./Section.astro";
 
 const description =
-  "Meet the SMS marketing and retention specialists behind nx-us and co's industry-leading campaign performance";
+  "Meet the SMS marketing and retention specialists behind Nexus's industry-leading campaign performance";
 
 // Team images
-import p1 from "../../assets/team/t1.png";
-import p2 from "../../assets/team/t2.png";
-import p3 from "../../assets/team/t3.png";
-import p4 from "../../assets/team/t4.png";
-import p5 from "../../assets/team/t5.png";
-import p6 from "../../assets/team/t6.png";
+import p1 from "../../assets/team/aarav-sharma.jpg";
+import p2 from "../../assets/team/priya-nair.jpg";
+import p3 from "../../assets/team/aditya-patel.jpg";
 
 const team = [
   {
     pic: p1,
-    name: "John Smith",
+    name: "Aarav Sharma",
     role: "CEO & Founder",
     description:
       "10+ years scaling direct-to-consumer communication, SMS automation architecture, and mobile growth.",
-    link: "https://linkedin.com",
   },
   {
     pic: p2,
-    name: "Jane Doe",
+    name: "Priya Nair",
     role: "VP of SMS Strategy",
     description:
-      "7+ years optimizing mobile customer journeys, carrier compliance (TCPA/CTIA), and subscriber retention.",
-    link: "https://linkedin.com",
+      "7+ years optimizing mobile customer journeys, carrier compliance, and subscriber retention.",
   },
   {
     pic: p3,
-    name: "Michael Brown",
-    role: "Head of SMS Deliverability",
+    name: "Aditya Patel",
+    role: "Head of SMS Deliverability & Infrastructure",
     description:
-      "5+ years in 10DLC registration, shortcode routing, carrier relations, and high-throughput delivery.",
-    link: "https://linkedin.com",
-  },
-  {
-    pic: p4,
-    name: "Emily Johnson",
-    role: "Lead SMS Copywriter",
-    description:
-      "4+ years crafting high-converting 160-character copy, flash sale drops, and MMS creative campaigns.",
-    link: "https://linkedin.com",
-  },
-  {
-    pic: p5,
-    name: "Brian Williams",
-    role: "Automation & CRM Engineer",
-    description:
-      "5+ years integrating SMS workflows with Shopify, Klaviyo, Salesforce, and custom API webhooks.",
-    link: "https://linkedin.com",
-  },
-  {
-    pic: p6,
-    name: "Sarah Kim",
-    role: "Conversational SMS Manager",
-    description:
-      "3+ years leading 2-way text concierge teams, customer support automation, and conversational commerce.",
-    link: "https://linkedin.com",
+      "5+ years in DLT registration, telecom carrier routing, and high-throughput delivery.",
   },
 ];
 ---
@@ -70,7 +40,7 @@ const team = [
   <div class="mt-[140px]">
     <SectionTitle sectionTitle="Team" description={description} />
     <div
-      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 grid-rows-2 gap-10"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
     >
       {
         team.map((member, index) => (
@@ -80,13 +50,9 @@ const team = [
             name={member.name}
             role={member.role}
             description={member.description}
-            link={member.link}
           />
         ))
       }
-    </div>
-    <div class="flex justify-end mt-10">
-      <button class="btn-primary">See all team</button>
     </div>
   </div>
 </Section>

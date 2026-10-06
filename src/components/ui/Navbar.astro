@@ -12,23 +12,23 @@ const menuitems = [
 const navButton = { href: '/#contact', label: 'Request a quote' };
 ---
 
-<div class="mt-20">
-  <nav class="w-full top-0 left-0 z-50 fixed bg-white">
-    <header class="flex flex-col lg:flex-row justify-between items-center my-5 px-6 md:px-32">
+<div class="h-16 sm:h-20">
+  <nav class="w-full top-0 left-0 z-50 fixed bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
+    <header class="flex flex-col lg:flex-row justify-between items-center py-2.5 sm:py-3 px-6 md:px-16 lg:px-24">
       <Astronav>
         <div class="flex w-full lg:w-auto items-center justify-between">
-          <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="/nexus-logo.png" class="h-11 sm:h-12 w-auto object-contain" alt="nx-us and co" />
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-black">nx-us and co</span>
+          <a href="/" class="flex items-center space-x-2.5 rtl:space-x-reverse">
+            <img src="/nexus-logo.png" class="h-8 sm:h-9 w-auto object-contain" alt="Nexus" />
+            <span class="text-lg sm:text-xl font-bold tracking-tight text-black">Nexus</span>
           </a>
           <div class="block lg:hidden">
-            <div id="menu-icon" class="w-8 h-8 text-black cursor-pointer">
+            <div id="menu-icon" class="w-7 h-7 text-black cursor-pointer">
               <!-- Open (hamburger) icon -->
-              <svg id="open-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-8 h-8">
+              <svg id="open-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-7 h-7">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
               </svg>
               <!-- Close (X) icon -->
-              <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-8 h-8 hidden">
+              <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-7 h-7 hidden">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
             </div>
@@ -36,12 +36,12 @@ const navButton = { href: '/#contact', label: 'Request a quote' };
         </div>
         
         <nav class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0" id="menu-items">
-          <ul class="font-medium flex flex-col p-4 lg:p-0 mt-4 border rounded-lg lg:flex-row lg:space-x-8 lg:mt-0 lg:border-0">
-            {menuitems.map((item, index) => (
+          <ul class="font-medium flex flex-col p-3 lg:p-0 mt-3 border rounded-lg lg:flex-row lg:space-x-7 lg:mt-0 lg:border-0 items-center">
+            {menuitems.map((item) => (
               <li>
                 <a 
                   href={item.href} 
-                  class="mobile-nav-link block py-2 px-3 text-black rounded lg:bg-transparent lg:p-0"
+                  class="mobile-nav-link block py-1.5 px-3 text-sm font-medium text-gray-700 hover:text-blue rounded lg:bg-transparent lg:p-0 transition-colors"
                   data-close-menu="true"
                 >
                   {item.label}
@@ -50,11 +50,11 @@ const navButton = { href: '/#contact', label: 'Request a quote' };
             ))}
             <div class="lg:hidden flex items-center justify-center mt-3 gap-4">
               <a 
-                class="mobile-nav-link px-9 py-5 rounded-2xl border border-zinc-900 bg-white hover:bg-black text-black hover:text-white inline-flex" 
+                class="mobile-nav-link px-6 py-2.5 rounded-xl border border-zinc-900 bg-white hover:bg-black text-black hover:text-white inline-flex text-sm font-medium transition-all" 
                 href={navButton.href}
                 data-close-menu="true"
               >
-                <h2 class="text-center text-xl font-normal leading-7">{navButton.label}</h2>
+                <span>{navButton.label}</span>
               </a>
             </div>
           </ul>
@@ -63,8 +63,8 @@ const navButton = { href: '/#contact', label: 'Request a quote' };
 
       <div>
         <div class="hidden lg:flex items-center gap-4">
-          <a class="px-9 py-5 rounded-2xl border border-zinc-900 bg-white hover:bg-black text-black hover:text-white inline-flex" href={navButton.href}>
-            <h2 class="text-center text-xl font-normal leading-7">{navButton.label}</h2>
+          <a class="px-5 py-2 rounded-xl border border-zinc-900 bg-white hover:bg-black text-black hover:text-white inline-flex text-sm font-medium transition-all" href={navButton.href}>
+            <span>{navButton.label}</span>
           </a>
         </div>
       </div>

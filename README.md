@@ -1,8 +1,8 @@
-# nx-us and co - High-Impact SMS Marketing Agency
+# Nexus - High-Impact SMS Marketing & Automation Platform
 
-Introducing nx-us and co - a high-converting landing page and website designed for our premier SMS marketing agency.
+Introducing **Nexus** (nexussms.in) - a high-converting SMS marketing and automation platform, a trade name of **Avqenta Technologies LLP**.
 
-Built with clean, modern aesthetics and leveraging the power of Astro and Tailwind CSS with vibrant orange styling, nx-us and co showcases our SMS marketing solutions, automated workflows, and customer success stories.
+Built with clean, modern aesthetics and leveraging the power of Astro and Tailwind CSS with Nexus royal blue branding, Nexus showcases high-throughput SMS marketing solutions, automated workflows, and customer success stories.
 
 - Clean and modern design.
 - SEO-friendly.
