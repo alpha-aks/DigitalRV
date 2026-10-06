@@ -10,32 +10,42 @@ import {
 
 // Retrieve environment variables with fallback
 function getApiKey(): string | undefined {
-  return (
-    import.meta.env.RESEND_API_KEY ||
-    (typeof process !== 'undefined' ? process.env?.RESEND_API_KEY : undefined)
-  );
+  const envKey =
+    (typeof process !== 'undefined' ? process.env?.RESEND_API_KEY : undefined) ||
+    (typeof import.meta !== 'undefined' ? import.meta.env?.RESEND_API_KEY : undefined);
+  return envKey?.trim();
 }
 
 function getFromEmail(): string {
-  return (
-    import.meta.env.RESEND_FROM_EMAIL ||
+  const envFrom =
     (typeof process !== 'undefined' ? process.env?.RESEND_FROM_EMAIL : undefined) ||
-    'Nexus <no-reply@nexussms.in>'
-  );
+    (typeof import.meta !== 'undefined' ? import.meta.env?.RESEND_FROM_EMAIL : undefined);
+  return (envFrom && envFrom.trim()) ? envFrom.trim() : 'Nexus <onboarding@resend.dev>';
 }
 
 function getAdminEmail(): string {
-  return (
-    import.meta.env.RESEND_TO_EMAIL ||
+  const envTo =
     (typeof process !== 'undefined' ? process.env?.RESEND_TO_EMAIL : undefined) ||
-    'contact@nexussms.in'
-  );
+    (typeof import.meta !== 'undefined' ? import.meta.env?.RESEND_TO_EMAIL : undefined);
+  return (envTo && envTo.trim()) ? envTo.trim() : 'contact@nexussms.in';
 }
 
 export async function sendEmailWorkflow(payload: EmailPayload): Promise<EmailResult> {
   const apiKey = getApiKey();
-  const fromEmail = getFromEmail();
+  let fromEmail = getFromEmail();
   const adminEmail = getAdminEmail();
+
+  // If no API key configured yet, return explicit error
+  if (!apiKey || apiKey === 're_your_api_key_here') {
+    const errorMsg =
+      'RESEND_API_KEY is missing or unconfigured. Please add your live Resend API key (starts with "re_") to your .env file or Vercel Environment Variables.';
+    console.error(`[Resend Error] ${errorMsg}`);
+    return {
+      success: false,
+      message: errorMsg,
+      error: 'MISSING_RESEND_API_KEY',
+    };
+  }
 
   // Determine user acknowledgement subject and html
   let userSubject = 'Nexus — We Received Your Request';
@@ -76,71 +86,101 @@ export async function sendEmailWorkflow(payload: EmailPayload): Promise<EmailRes
   const adminSubject = `[Nexus Alert] New ${payload.type.toUpperCase()} from ${payload.name || payload.email}`;
   const adminHtml = getAdminNotificationEmail(payload);
 
-  // If no API key configured yet, simulate gracefully for development
-  if (!apiKey || apiKey === 're_your_api_key_here') {
-    console.warn(
-      `[Resend Simulation Mode] No RESEND_API_KEY detected in .env. Simulating email dispatch:`,
-      {
-        userEmail: payload.email,
-        adminEmail,
-        type: payload.type,
-      }
-    );
-    return {
-      success: true,
-      message: 'Request processed! (Resend simulation mode active - add RESEND_API_KEY to send live emails).',
-    };
-  }
-
   try {
     const resend = new Resend(apiKey);
 
-    // 1. Send Acknowledgement to User (if user provided valid email)
-    const userPromise = payload.email
-      ? resend.emails.send({
-          from: fromEmail,
-          to: payload.email,
-          subject: userSubject,
-          html: userHtml,
-        })
-      : Promise.resolve(null);
+    // Helper to send email with auto-fallback to onboarding@resend.dev if custom domain is unverified
+    async function sendWithFallback(params: {
+      from: string;
+      to: string;
+      subject: string;
+      html: string;
+      replyTo?: string;
+    }) {
+      let result = await resend.emails.send({
+        from: params.from,
+        to: params.to,
+        subject: params.subject,
+        html: params.html,
+        replyTo: params.replyTo,
+      });
 
-    // 2. Send Alert Notification to Admin
-    const adminPromise = resend.emails.send({
+      // If domain verification error, fallback immediately to onboarding@resend.dev
+      if (
+        result.error &&
+        (result.error.message?.toLowerCase().includes('domain') ||
+          result.error.message?.toLowerCase().includes('verify') ||
+          result.error.message?.toLowerCase().includes('forbidden')) &&
+        params.from !== 'Nexus <onboarding@resend.dev>'
+      ) {
+        console.warn(
+          `[Resend Notice] Sender '${params.from}' not yet verified. Falling back to 'Nexus <onboarding@resend.dev>'...`
+        );
+        result = await resend.emails.send({
+          from: 'Nexus <onboarding@resend.dev>',
+          to: params.to,
+          subject: params.subject,
+          html: params.html,
+          replyTo: params.replyTo,
+        });
+      }
+
+      return result;
+    }
+
+    // 1. Dispatch Admin Alert
+    const adminRes = await sendWithFallback({
       from: fromEmail,
       to: adminEmail,
-      replyTo: payload.email,
       subject: adminSubject,
       html: adminHtml,
+      replyTo: payload.email,
     });
 
-    const [userRes, adminRes] = await Promise.allSettled([userPromise, adminPromise]);
+    // 2. Dispatch User Acknowledgement (if valid email provided)
+    let userRes: any = null;
+    if (payload.email && payload.email.includes('@')) {
+      userRes = await sendWithFallback({
+        from: fromEmail,
+        to: payload.email,
+        subject: userSubject,
+        html: userHtml,
+        replyTo: adminEmail,
+      });
+    }
 
-    const adminFailed = adminRes.status === 'rejected';
-    const userFailed = userRes.status === 'rejected';
-
-    if (adminFailed && userFailed) {
-      console.error('[Resend Error]', { adminRes, userRes });
+    // Check if BOTH failed
+    if (adminRes.error && (!userRes || userRes.error)) {
+      const errDetail = adminRes.error.message || userRes?.error?.message || 'Failed to dispatch email';
+      console.error('[Resend Dispatch Failed]', { adminError: adminRes.error, userError: userRes?.error });
       return {
         success: false,
-        message: 'Failed to dispatch emails via Resend.',
-        error: String((adminRes as PromiseRejectedResult).reason),
+        message: errDetail,
+        error: String(errDetail),
       };
     }
 
+    // At least one succeeded
+    const isFullSuccess = !adminRes.error && (!userRes || !userRes.error);
+    const notice = adminRes.error?.message || userRes?.error?.message;
+
     return {
       success: true,
-      message: 'Email notifications sent successfully via Resend!',
+      message: isFullSuccess
+        ? 'Email dispatched successfully!'
+        : `Notification sent! (Note: ${notice})`,
       data: {
-        userStatus: userRes.status,
-        adminStatus: adminRes.status,
+        adminId: adminRes.data?.id,
+        userId: userRes?.data?.id,
+        adminError: adminRes.error?.message,
+        userError: userRes?.error?.message,
       },
     };
   } catch (err: any) {
-    console.error('[Resend Exception]', err);
+    console.error('[Resend Fatal Exception]', err);
     return {
       success: false,
-      message: err?.message || 'Error occurred while contacting Resend API',
+      message: err?.message || 'Error occurred while communicating with Resend',
       error: String(err),
     };
   }

@@ -4,6 +4,39 @@ import type { EmailPayload } from '../../lib/email/types';
 
 export const prerender = false;
 
+// GET: Diagnostic test endpoint to check Resend configuration status
+export const GET: APIRoute = async () => {
+  const apiKey =
+    (typeof process !== 'undefined' ? process.env?.RESEND_API_KEY : undefined) ||
+    (typeof import.meta !== 'undefined' ? import.meta.env?.RESEND_API_KEY : undefined);
+  const fromEmail =
+    (typeof process !== 'undefined' ? process.env?.RESEND_FROM_EMAIL : undefined) ||
+    (typeof import.meta !== 'undefined' ? import.meta.env?.RESEND_FROM_EMAIL : undefined);
+  const toEmail =
+    (typeof process !== 'undefined' ? process.env?.RESEND_TO_EMAIL : undefined) ||
+    (typeof import.meta !== 'undefined' ? import.meta.env?.RESEND_TO_EMAIL : undefined);
+
+  const isConfigured = !!apiKey && apiKey !== 're_your_api_key_here';
+  const maskedKey = isConfigured ? `${apiKey.slice(0, 5)}...${apiKey.slice(-4)}` : 'NOT_SET';
+
+  return new Response(
+    JSON.stringify({
+      status: isConfigured ? 'READY' : 'NEEDS_API_KEY',
+      hasApiKey: isConfigured,
+      apiKeyPreview: maskedKey,
+      fromEmail: fromEmail || 'Nexus <onboarding@resend.dev> (default)',
+      toEmail: toEmail || 'contact@nexussms.in (default)',
+      message: isConfigured
+        ? 'Resend API key is detected. Ready to send emails.'
+        : 'RESEND_API_KEY is not set. Please set it in .env or Vercel Environment Variables.',
+    }),
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
+};
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     let payload: Partial<EmailPayload> = {};
@@ -12,7 +45,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (contentType.includes('application/json')) {
       payload = await request.json();
-    } else if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+    } else if (
+      contentType.includes('application/x-www-form-urlencoded') ||
+      contentType.includes('multipart/form-data')
+    ) {
       const formData = await request.formData();
       payload = {
         name: (formData.get('name') as string) || '',
